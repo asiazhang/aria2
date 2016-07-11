@@ -212,7 +212,7 @@ void BtPieceMessage::send()
 
 void BtPieceMessage::pushPieceData(int64_t offset, int32_t length) const
 {
-  assert(length <= static_cast<int32_t>(16_k));
+  assert(length <= static_cast<int32_t>(MAX_BLOCK_LENGTH));
   auto buf = std::vector<unsigned char>(length + MESSAGE_HEADER_LENGTH);
   createMessageHeader(buf.data());
   ssize_t r;
@@ -277,7 +277,8 @@ void BtPieceMessage::onNewPiece(const std::shared_ptr<Piece>& piece)
   A2_LOG_INFO(fmt(MSG_GOT_NEW_PIECE, getCuid(),
                   static_cast<unsigned long>(piece->getIndex())));
   getPieceStorage()->completePiece(piece);
-  getPieceStorage()->advertisePiece(getCuid(), piece->getIndex());
+  getPieceStorage()->advertisePiece(getCuid(), piece->getIndex(),
+                                    global::wallclock());
 }
 
 void BtPieceMessage::onWrongPiece(const std::shared_ptr<Piece>& piece)

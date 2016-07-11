@@ -232,8 +232,10 @@ HTTP/FTP/SFTP Options
 
 .. option:: -o, --out=<FILE>
 
-  The file name of the downloaded file. When the
-  :option:`--force-sequential <-Z>` option is used, this option is ignored.
+  The file name of the downloaded file.  It is always relative to the
+  directory given in :option:`--dir <-d>` option.  When the
+  :option:`--force-sequential <-Z>` option is used, this option is
+  ignored.
 
   .. note::
 
@@ -668,9 +670,12 @@ BitTorrent Specific Options
 
 .. option:: --bt-external-ip=<IPADDRESS>
 
-  Specify the external IP address to report to a BitTorrent
-  tracker. Although this function is named ``external``, it can accept
-  any kind of IP addresses. IPADDRESS must be a numeric IP address.
+  Specify the external IP address to use in BitTorrent download and DHT.
+  It may be sent to BitTorrent tracker. For DHT, this option should be
+  set to report that local node is downloading a particular torrent.
+  This is critical to use DHT in a private network. Although this
+  function is named ``external``, it can accept any kind of IP
+  addresses.
 
 .. option:: --bt-force-encryption[=true|false]
 
@@ -3159,7 +3164,19 @@ For information on the *secret* parameter, see :ref:`rpc_auth`.
 
   This method changes options of the download denoted by *gid* (string)
   dynamically.  *options* is a struct.
-  The following options are available for active downloads:
+  The options listed in `Input File`_ subsection are available,
+  **except** for following options:
+
+  * :option:`dry-run <--dry-run>`
+  * :option:`metalink-base-uri <--metalink-base-uri>`
+  * :option:`parameterized-uri <-P>`
+  * :option:`pause <--pause>`
+  * :option:`piece-length <--piece-length>`
+  * :option:`rpc-save-upload-metadata <--rpc-save-upload-metadata>`
+
+  Except for the following options, changing the other options of
+  active download makes it restart (restart itself is managed by
+  aria2, and no user intervention is required):
 
   * :option:`bt-max-peers <--bt-max-peers>`
   * :option:`bt-request-peer-speed-limit <--bt-request-peer-speed-limit>`
@@ -3168,15 +3185,6 @@ For information on the *secret* parameter, see :ref:`rpc_auth`.
   * :option:`max-download-limit <--max-download-limit>`
   * :option:`max-upload-limit <-u>`
 
-  For waiting or paused downloads, in addition to the above options,
-  options listed in `Input File`_ subsection are available,
-  **except** for following options:
-  :option:`dry-run <--dry-run>`,
-  :option:`metalink-base-uri <--metalink-base-uri>`,
-  :option:`parameterized-uri <-P>`,
-  :option:`pause <--pause>`,
-  :option:`piece-length <--piece-length>` and
-  :option:`rpc-save-upload-metadata <--rpc-save-upload-metadata>` option.
   This method returns ``OK`` for success.
 
   The following examples set the :option:`max-download-limit

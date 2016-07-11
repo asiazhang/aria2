@@ -150,6 +150,7 @@ RequestGroup::RequestGroup(const std::shared_ptr<GroupId>& gid,
       haltRequested_(false),
       forceHaltRequested_(false),
       pauseRequested_(false),
+      restartRequested_(false),
       inMemoryDownload_(false),
       seedOnly_(false)
 {
@@ -986,6 +987,8 @@ void RequestGroup::setForceHaltRequested(bool f, HaltReason haltReason)
 
 void RequestGroup::setPauseRequested(bool f) { pauseRequested_ = f; }
 
+void RequestGroup::setRestartRequested(bool f) { restartRequested_ = f; }
+
 void RequestGroup::releaseRuntimeResource(DownloadEngine* e)
 {
 #ifdef ENABLE_BITTORRENT
@@ -994,7 +997,7 @@ void RequestGroup::releaseRuntimeResource(DownloadEngine* e)
   peerStorage_ = nullptr;
 #endif // ENABLE_BITTORRENT
   if (pieceStorage_) {
-    pieceStorage_->removeAdvertisedPiece(0_s);
+    pieceStorage_->removeAdvertisedPiece(Timer::zero());
   }
   // Don't reset segmentMan_ and pieceStorage_ here to provide
   // progress information via RPC
@@ -1306,6 +1309,11 @@ bool RequestGroup::isSeeder() const
 #else  // !ENABLE_BITTORRENT
   return false;
 #endif // !ENABLE_BITTORRENT
+}
+
+void RequestGroup::setPendingOption(std::shared_ptr<Option> option)
+{
+  pendingOption_ = std::move(option);
 }
 
 } // namespace aria2
